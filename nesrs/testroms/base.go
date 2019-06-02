@@ -40,6 +40,7 @@ func TestRom(romPath string, screenshotPath string, numberOfSeconds int, t *test
 
 	if !bytes.Equal(actualContent, expectedContent) {
 		// Dump actual content so it can be reviewed.
+		fmt.Printf("Test failed for file %s\n", romPath)
 		file, _ := ioutil.TempFile("", "test*.ppm")
 		fmt.Printf("Printing to file %s\n", file.Name())
 		ppmVideoReceiver.Write(file)

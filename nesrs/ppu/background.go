@@ -97,12 +97,12 @@ func (renderer *backgroundRenderer) loadPipeline() {
 
 	// Load in MSB
 	renderer.pipeline.tileDataLow =
-		int(bits.Reverse(uint(renderer.pipeline.tileDataLow))<<8) |
+		(reverseByte(renderer.tileLatch.tileDataLow) << 8) |
 			(renderer.pipeline.tileDataLow & 0x00FF)
 
 	// Load in MSB
 	renderer.pipeline.tileDataHigh =
-		int(bits.Reverse(uint(renderer.pipeline.tileDataHigh))<<8) |
+		(reverseByte(renderer.tileLatch.tileDataHigh) << 8) |
 			(renderer.pipeline.tileDataHigh & 0x00FF)
 
 	// Load in MSB
@@ -142,7 +142,7 @@ func (renderer *backgroundRenderer) renderTileData(currentCycle int, scanlineOff
 func (renderer *backgroundRenderer) renderBackgroundPixel(currentCycle int, scanlineOffscreenBuffer []int) {
 	// Determine palette data
 	fineX := renderer.vramReg.bgFineX
-	bitPosition := 1 << uint(fineX)
+	bitPosition := 1 << uint8(fineX)
 
 	tilePaletteDataLowBit := 0
 	if (renderer.pipeline.tileDataLow & bitPosition) != 0 {
@@ -168,7 +168,7 @@ func (renderer *backgroundRenderer) renderBackgroundPixel(currentCycle int, scan
 	if paletteIndex == 0x04 || paletteIndex == 0x08 || paletteIndex == 0x0C {
 		paletteIndex = 0x00
 	}
-	
+
 	scanlineOffscreenBuffer[currentCycle] = paletteIndex
 }
 
@@ -266,4 +266,10 @@ func (renderer *backgroundRenderer) incrementBackgroundFineY() {
 	renderer.vramReg.setBackgroundFineY(fineY)
 	renderer.vramReg.setBackgroundTileY(tileY)
 	renderer.vramReg.setNameTableIndex(nameTableIndex)
+}
+
+func reverseByte(b int) int {
+	rev := bits.Reverse32(uint32(b))
+	rev = (rev >> 24) & 0xFF
+	return int(rev)
 }

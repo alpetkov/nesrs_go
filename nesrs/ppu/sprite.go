@@ -1,7 +1,5 @@
 package ppu
 
-import "math/bits"
-
 type spriteRenderPipeline struct {
 	tileDataLow          int // 8 bits (8 pixels - 1 tile row pixels)
 	tileDataHigh         int // 8 bits (8 pixels - 1 tile row pixels)
@@ -28,9 +26,7 @@ const (
 	sprAttrPalette            = 0x3  // bits 0 & 1
 )
 
-func newSpriteRenderer(ctrlReg *ctrlRegister, maskReg *maskRegister, statusReg *statusRegister, vramMemory *vramMemory) *spriteRenderer {
-	spriteMemory := &spriteMemory{}
-
+func newSpriteRenderer(ctrlReg *ctrlRegister, maskReg *maskRegister, statusReg *statusRegister, vramMemory *vramMemory, spriteMemory *spriteMemory) *spriteRenderer {
 	renderer := spriteRenderer{
 		ctrlReg:    ctrlReg,
 		maskReg:    maskReg,
@@ -264,8 +260,8 @@ func (renderer *spriteRenderer) fetchSpriteTileData(currentScanline int) {
 			spriteRenderData.tileDataLow = renderer.vramMemory.read(tileDataLowAddress)
 			spriteRenderData.tileDataHigh = renderer.vramMemory.read(tileDataLowAddress + 8)
 			if (attributes & sprAttrRevertHorizontally) != 0 {
-				spriteRenderData.tileDataLow = int(bits.Reverse(uint(spriteRenderData.tileDataLow)))
-				spriteRenderData.tileDataHigh = int(bits.Reverse(uint(spriteRenderData.tileDataHigh)))
+				spriteRenderData.tileDataLow = reverseByte(spriteRenderData.tileDataLow)
+				spriteRenderData.tileDataHigh = reverseByte(spriteRenderData.tileDataHigh)
 			}
 			spriteRenderData.attributePaletteData = attributes & sprAttrPalette
 			spriteRenderData.isHighPriority = (attributes & sprAttrPriority) == 0

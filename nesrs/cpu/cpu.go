@@ -1,7 +1,5 @@
 package cpu
 
-import "fmt"
-
 // Status register's flags
 const (
 	flagC = 0x01 // Carry flag. 1 -> Carry occurred
@@ -111,7 +109,6 @@ func (cpu *CPU) Reset() {
 
 // NMI - sends NMI to the CPU
 func (cpu *CPU) NMI() {
-	fmt.Println("CPU NMI")
 	cpu.requestInterrupt(NMI)
 }
 
@@ -167,7 +164,7 @@ func (cpu *CPU) executePendingInterruptOp() {
 	} else if cpu.pendingInterrupt == NMI {
 		cpu.OpCycles = 7
 		cpu.push((cpu.PC >> 8) & 0xFF)
-		cpu.push(cpu.PC &^ 0x00FF)
+		cpu.push(cpu.PC & 0x00FF)
 		cpu.push(cpu.P &^ flagB)
 		cpu.P = cpu.P &^ flagD
 		cpu.PC = (cpu.readMemory(0xFFFB) << 8) | cpu.readMemory(0xFFFA)
@@ -190,7 +187,7 @@ func (cpu *CPU) executePendingInterruptOp() {
 //
 
 func (cpu *CPU) readMemory(address int) int {
-	return cpu.memory.Read(address)
+	return cpu.memory.Read(address) & 0xFF
 }
 
 func (cpu *CPU) writeMemory(address int, value int) {

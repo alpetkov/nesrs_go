@@ -54,7 +54,7 @@ func New(cartridge *cartridge.Cartridge, vblReceiver VBLReceiver, videoReceiver 
 	spriteMemory := &spriteMemory{}
 
 	backgroundRenderer := newBackgroundRenderer(ctrlReg, maskReg, vramAddressScrollReg, vramMemory)
-	spriteRenderer := newSpriteRenderer(ctrlReg, maskReg, statusReg, vramMemory)
+	spriteRenderer := newSpriteRenderer(ctrlReg, maskReg, statusReg, vramMemory, spriteMemory)
 
 	ppu := PPU{
 		ctrlReg:              ctrlReg,
